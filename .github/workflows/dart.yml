@@ -14,26 +14,29 @@ jobs:
     strategy:
       matrix:
         dart_version: [2.2.0, latest]
-        platform: [vm, firefox]
+        platform: [vm, chrome]
+    env:
+      DART_SDK: /usr/lib/dart/bin
     
     steps:
     - uses: actions/checkout@v1
     - name: Install Dart SDK
       run: cd .github/scripts && chmod +x install_dart.sh && sudo ./install_dart.sh ${{ matrix.dart_version }}
     - name: Install dependencies
-      run:  /usr/lib/dart/bin/pub get
+      run: |
+        PATH=${PATH}:${DART_SDK}
+        pub get
     - name: Run tests
-      run:  xvfb-run -a /usr/lib/dart/bin/pub run test -p ${{ matrix.platform }}
-      
+      run: |
+        PATH=${PATH}:${DART_SDK}
+        xvfb-run -a pub run test -p ${{ matrix.platform }}
+
   analyse:
     name: Code analysis
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dart_version: [2.2.0, latest]
-    
+
     container:
-      image:  google/dart:${{ matrix.dart_version }}
+      image:  google/dart:latest
     
     steps:
     - uses: actions/checkout@v1
@@ -45,12 +48,9 @@ jobs:
   format:
     name: Code format
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dart_version: [2.2.0, latest]
-    
+
     container:
-      image:  google/dart:${{ matrix.dart_version }}
+      image:  google/dart:latest
     
     steps:
     - uses: actions/checkout@v1
