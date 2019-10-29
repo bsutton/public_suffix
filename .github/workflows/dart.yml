@@ -1,4 +1,4 @@
-name: Dart CI
+name: build
 
 on:
   push:
@@ -30,6 +30,31 @@ jobs:
       run: |
         PATH=${PATH}:${DART_SDK}
         xvfb-run -a pub run test -p ${{ matrix.platform }}
+
+  coverage:
+    name: Test coverage
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      DART_SDK: /usr/lib/dart/bin
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Dart SDK
+      run: cd .github/scripts && chmod +x install_dart.sh && sudo ./install_dart.sh latest
+    - name: Install dependencies
+      run: |
+        PATH=${PATH}:${DART_SDK}
+        pub get
+    - name: Analyse code coverage
+      run: |
+        PATH=${PATH}:${DART_SDK}
+        pub run covered -p vm,chrome --headless --report-on=lib
+    - name: Upload coverage report to Codecov.io
+      uses: codecov/codecov-action@v1.0.3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: .covered/reports/lcov_merged.info
 
   analyse:
     name: Code analysis

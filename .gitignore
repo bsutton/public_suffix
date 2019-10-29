@@ -5,8 +5,7 @@
 pubspec.lock
 
 # Files from dart packages
-test/.test_coverage.dart
-
+.covered/
 
 # Conventional directory for build outputs
 build/
