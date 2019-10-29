@@ -49,7 +49,6 @@ jobs:
     - name: Analyse code coverage
       run: |
         PATH=${PATH}:${DART_SDK}/bin
-        alias chrome="google-chrome"
         pub run covered -p vm,chrome --headless --report-on=lib
     - name: Upload coverage report to Codecov.io
       uses: codecov/codecov-action@v1.0.3
