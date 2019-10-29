@@ -16,7 +16,7 @@ jobs:
         dart_version: [2.2.0, latest]
         platform: [vm, chrome]
     env:
-      DART_SDK: /usr/lib/dart/bin
+      DART_SDK: /usr/lib/dart
     
     steps:
     - uses: actions/checkout@v1
@@ -24,11 +24,11 @@ jobs:
       run: cd .github/scripts && chmod +x install_dart.sh && sudo ./install_dart.sh ${{ matrix.dart_version }}
     - name: Install dependencies
       run: |
-        PATH=${PATH}:${DART_SDK}
+        PATH=${PATH}:${DART_SDK}/bin
         pub get
     - name: Run tests
       run: |
-        PATH=${PATH}:${DART_SDK}
+        PATH=${PATH}:${DART_SDK}/bin
         xvfb-run -a pub run test -p ${{ matrix.platform }}
 
   coverage:
@@ -36,7 +36,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     env:
-      DART_SDK: /usr/lib/dart/bin
+      DART_SDK: /usr/lib/dart
 
     steps:
     - uses: actions/checkout@v1
@@ -44,11 +44,11 @@ jobs:
       run: cd .github/scripts && chmod +x install_dart.sh && sudo ./install_dart.sh latest
     - name: Install dependencies
       run: |
-        PATH=${PATH}:${DART_SDK}
+        PATH=${PATH}:${DART_SDK}/bin
         pub get
     - name: Analyse code coverage
       run: |
-        PATH=${PATH}:${DART_SDK}
+        PATH=${PATH}:${DART_SDK}/bin
         pub run covered -p vm,chrome --headless --report-on=lib
     - name: Upload coverage report to Codecov.io
       uses: codecov/codecov-action@v1.0.3
